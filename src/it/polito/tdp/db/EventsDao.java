@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import it.polito.tdp.model.Event;
@@ -53,6 +56,51 @@ public class EventsDao {
 			e.printStackTrace();
 			return null ;
 		}
+	}
+	
+	
+	public List<Year> getYear(){
+		List<Year> listaAnni = new LinkedList<Year>();
+		String sql= "select distinct Year(reported_date) as anno from events order by reported_date asc ";
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				listaAnni.add(Year.of(res.getInt("anno"))) ;
+			}
+			conn.close();
+			return listaAnni;
+		}
+		
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public List<District> getDistricts(Year y){
+		List<District> ltemp = new LinkedList<District>(); 
+			String sql ="select district_id, avg(geo_lon) as a_lon, avg(geo_lat) as a_lat from events  where year(reported_date) = ? group by district_id; " ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, y.getValue());
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				ltemp.add(new District(res.getInt("district_id"), res.getDouble("a_lon") , res.getDouble("a_lat")) ) ;
+			}
+			conn.close();
+			return ltemp;
+		}
+		
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+		
 	}
 
 }
