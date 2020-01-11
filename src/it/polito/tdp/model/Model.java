@@ -1,5 +1,6 @@
 package it.polito.tdp.model;
 
+import java.time.Month;
 import java.time.Year;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -30,6 +31,17 @@ public class Model {
 				return lAnni;
 	}
 	
+	public List<Month> getMesi(Year y){
+		List<Month> lMesi = new LinkedList<Month>(eventsDao.getMonth(y));
+		return lMesi;
+	}
+	
+	public List<Integer> getDay(Year y, Month m){
+		List<Integer> lGiorni = new LinkedList<Integer>(eventsDao.getDay(y, m));
+		return lGiorni;
+	}
+	
+	
 	public void creaGrafo(Year y) {
 	this.grafo = new SimpleWeightedGraph<District, MyEdge>(MyEdge.class);
 	
@@ -59,11 +71,13 @@ public class Model {
 	
 	
 	public String getAdiacenti(){
-		List<MyEdge> ltemp = new LinkedList<MyEdge>();
+		//List<MyEdge> ltemp = new LinkedList<MyEdge>();
 		
 		String ret = "";
 		
-		for(Object d : this.grafo.vertexSet()) {
+		List<District> ltemp = new LinkedList<District>();
+		
+		/*for(Object d : this.grafo.vertexSet()) {
 			ret += ((District) d).getDistrictId() + " ";
 			for(Object n : Graphs.neighborListOf(this.grafo, d)) {
 				ltemp.add((MyEdge) this.grafo.getEdge(d, n));
@@ -75,7 +89,23 @@ public class Model {
 			ltemp = new LinkedList<MyEdge>();
 		}
 		
+		return ret; */
+		
+		for(Object o: this.grafo.vertexSet()) {
+			District d = (District) o;
+			ret+= "Elenco dei distretti adiacenti di: " + d.getDistrictId() + "\n " ;
+			ltemp =  Graphs.neighborListOf(this.grafo, d);
+			Collections.sort(ltemp , new Comparatore(d));
+			for(District di: ltemp) {
+				ret+= di.getDistrictId() + " \n" ;
+			}
+			ret = ret +"\n" ;
+		}
+		
 		return ret;
+		
 	}
+	
+	
 	
 }

@@ -5,6 +5,7 @@
 package it.polito.tdp.crimes;
 
 import java.net.URL;
+import java.time.Month;
 import java.time.Year;
 import java.util.ResourceBundle;
 
@@ -17,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 public class CrimesController {
 
@@ -32,10 +34,10 @@ public class CrimesController {
     private ComboBox<Year> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Month> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGiorno"
-    private ComboBox<?> boxGiorno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxGiorno; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCreaReteCittadina"
     private Button btnCreaReteCittadina; // Value injected by FXMLLoader
@@ -55,11 +57,33 @@ public class CrimesController {
     	//txtResult.appendText("Creo il grafo... " , this.model.creaGrafo());
     	this.model.creaGrafo(boxAnno.getValue());
     	txtResult.appendText("Ecco i vertici adiacenti \n " + this.model.getAdiacenti());
+    	ObservableList<Month> mese = FXCollections.observableList(model.getMesi(boxAnno.getValue()));
+    	boxMese.setItems(mese);
+    	boxMese.setValue(mese.get(0));
+    	ObservableList<Integer> giorno = FXCollections.observableList(model.getDay(boxAnno.getValue(), boxMese.getValue()));
+    	boxGiorno.setItems(giorno);
+    	boxGiorno.setValue(giorno.get(0));
+    }
+    
+    @FXML
+    void updateDays(ActionEvent event) {
+    	System.out.println("you clicked");
+    	ObservableList<Integer> giorno = FXCollections.observableList(model.getDay(boxAnno.getValue(), boxMese.getValue()));
+    	boxGiorno.setItems(giorno);
+    	boxGiorno.setValue(giorno.get(0));
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+    	try {
+    		int nAgenti = Integer.parseInt(txtN.getText());
+    		if(nAgenti<1 || nAgenti>10) {
+    			txtResult.appendText("Inserire un numero intero tra 1 e 10");
+    		}
+    	}
+    	catch(NumberFormatException n) {
+    		txtResult.appendText("Inserire un numero intero!");
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

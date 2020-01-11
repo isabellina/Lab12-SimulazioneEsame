@@ -75,6 +75,13 @@ public class District {
 			return false;
 		return true;
 	}
+
+
+
+	@Override
+	public String toString() {
+		return "District [districtId=" + districtId + "]";
+	}
 	
 	
 	

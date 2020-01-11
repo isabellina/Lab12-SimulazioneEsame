@@ -2,24 +2,33 @@ package it.polito.tdp.model;
 
 import java.util.Comparator;
 
+import com.javadocmd.simplelatlng.LatLng;
+import com.javadocmd.simplelatlng.LatLngTool;
+import com.javadocmd.simplelatlng.util.LengthUnit;
+
 import it.polito.tdp.db.District;
 
-public class Comparatore implements Comparator {
+public class Comparatore implements Comparator<District> {
 
-	
+	private District centro;
 
-	@Override
-	public int compare(Object o1, Object o2) {
-		MyEdge e = (MyEdge) o1;
-		MyEdge a = (MyEdge) o2;
-		if(e.getWeight()==a.getWeight()) {
-			return 0;
-		}
-		else if(e.getWeight()<a.getWeight()) {
-			return -1;
-		}
-		
-		return 1;
+	public Comparatore(District centro) {
+		this.centro = centro;
 	}
 
+	@Override
+	public int compare(District d1, District d2) {
+		LatLng centroAssoluto = new LatLng(this.centro.getGeoLat(), this.centro.getGeoLon());
+		LatLng centro1 = new LatLng(d1.getGeoLat(), d1.getGeoLon());
+		LatLng centro2 = new LatLng(d2.getGeoLat(), d2.getGeoLon());
+		double distanza = LatLngTool.distance(centro1, centroAssoluto, LengthUnit.KILOMETER);
+		double distanza2 = LatLngTool.distance(centro2, centroAssoluto, LengthUnit.KILOMETER);
+		if(distanza<distanza2) {
+			return -1;
+		}
+		else if(distanza>distanza2) {
+			return 1;
+		}
+		return 0;
+	}
 }

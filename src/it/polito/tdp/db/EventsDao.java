@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -80,6 +81,56 @@ public class EventsDao {
 		return null;
 	}
 	
+	public List<Month> getMonth(Year y){
+		String sql="select distinct Month(reported_date) as mese from events where Year(reported_date)=? order by reported_date ASC ";
+		List<Month> listaMesi = new LinkedList<Month>();
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, y.getValue());
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				listaMesi.add(Month.of(res.getInt("mese")));
+			}
+			conn.close();
+			return listaMesi;
+		}
+		catch(SQLException s) {
+			s.printStackTrace();
+		}
+		
+		return null;
+	
+	
+	}
+	
+	public List<Integer> getDay(Year y, Month m){
+		String sql= "select  distinct day(reported_date) as giorno from events "
+				+ "where year(reported_date)= ? and month(reported_date) = ? order by reported_date asc" ;
+		List<Integer> listaGiorni = new LinkedList<Integer>();
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, y.getValue());
+			st.setInt(2, m.getValue());
+			ResultSet res = st.executeQuery() ;
+			while(res.next()) {
+				listaGiorni.add(res.getInt("giorno")) ;
+			}
+			conn.close();
+			return listaGiorni;
+			
+		
+	}
+		catch(SQLException q) {
+			q.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public List<District> getDistricts(Year y){
 		List<District> ltemp = new LinkedList<District>(); 
 			String sql ="select district_id, avg(geo_lon) as a_lon, avg(geo_lat) as a_lat from events  where year(reported_date) = ? group by district_id; " ;
@@ -102,5 +153,7 @@ public class EventsDao {
 		return null;
 		
 	}
+	
+	
 
 }
