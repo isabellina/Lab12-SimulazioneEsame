@@ -42,6 +42,13 @@ public class Model {
 	}
 	
 	
+	public List<Crime> getEventi(Year y, Month m , int day){
+		List<Crime> listaCrimini = new LinkedList<Crime>(eventsDao.getCrimes(day, m, y));
+		return listaCrimini;
+		
+	}
+	
+	
 	public void creaGrafo(Year y) {
 	this.grafo = new SimpleWeightedGraph<District, MyEdge>(MyEdge.class);
 	

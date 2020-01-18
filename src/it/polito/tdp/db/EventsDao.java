@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import it.polito.tdp.model.Crime;
 import it.polito.tdp.model.Event;
 
 
@@ -152,6 +153,31 @@ public class EventsDao {
 		}
 		return null;
 		
+	}
+	
+	public List<Crime> getCrimes(int day, Month month, Year year)
+	{
+		List<Crime> listaCrimini = new LinkedList<Crime>();
+		String sql = "select incident_id,district_id, offense_category_id from events where year(reported_date) = ? and month(reported_date) = ? and day(reported_date) = ?;";
+		try {
+			Connection conn = DBConnect.getConnection() ;
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, year.getValue());
+			st.setInt(2, month.getValue());
+			st.setInt(3, day);
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				listaCrimini.add(new Crime(res.getInt("incident_id"),res.getInt("district_id"),res.getString("offense_category_id"),false));
+			}
+			conn.close();
+			return listaCrimini;
+			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	
